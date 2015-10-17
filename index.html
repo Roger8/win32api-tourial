@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Win32api-tourial by Roger8</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Win32api-tourial</h1>
+        <p>using window class </p>
+        <p class="view"><a href="https://github.com/Roger8/win32api-tourial">View the Project on GitHub <small>Roger8/win32api-tourial</small></a></p>
+        <ul>
+          <li><a href="https://github.com/Roger8/win32api-tourial/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Roger8/win32api-tourial/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Roger8/win32api-tourial">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>
+<a id="win32-api-tourial-1" class="anchor" href="#win32-api-tourial-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>win32 api tourial 1</h2>
+
+<p>把win32 api封装在类里的一次尝试</p>
+
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>Windows.h<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>iostream<span class="pl-pds">&gt;</span></span>
+<span class="pl-k">using</span> <span class="pl-k">namespace</span> <span class="pl-en">std</span><span class="pl-k">;</span>
+LRESULT CALLBACK <span class="pl-en">WndProc</span>(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+<span class="pl-k">class</span> <span class="pl-en">windowclass</span>:<span class="pl-k">public</span> <span class="pl-en">WNDCLASSEX</span>
+{
+<span class="pl-k">public:</span>
+    <span class="pl-en">windowclass</span>(WNDPROC WndProc ,<span class="pl-k">char</span> <span class="pl-k">const</span> * className, HINSTANCE hInst)
+    {
+        cbSize          = <span class="pl-k">sizeof</span> (WNDCLASSEX);
+        style           = CS_HREDRAW | CS_VREDRAW;
+        lpfnWndProc     = WndProc;
+        cbClsExtra      = <span class="pl-c1">0</span>;
+        cbWndExtra      = <span class="pl-c1">0</span>;
+        hInstance       = hInst;
+        hIcon           = <span class="pl-c1">0</span>;
+        hIconSm         = <span class="pl-c1">0</span>;
+        hCursor         = <span class="pl-c1">LoadCursor</span> (<span class="pl-c1">0</span>, IDC_ARROW);
+        hbrBackground   = (HBRUSH) (COLOR_WINDOW + <span class="pl-c1">1</span>);
+        lpszMenuName    = className;
+        lpszClassName   = className;
+    }
+    <span class="pl-k">void</span> <span class="pl-en">Register</span>()
+    {
+        <span class="pl-k">if</span>(!<span class="pl-c1">RegisterClassEx</span>(<span class="pl-v">this</span>))
+        {
+            <span class="pl-c1">MessageBox</span>(<span class="pl-c1">NULL</span>, <span class="pl-s"><span class="pl-pds">"</span>Window Registration Failed!<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Error!<span class="pl-pds">"</span></span>,
+                MB_ICONEXCLAMATION | MB_OK);
+            <span class="pl-k">return</span> ;
+        }
+    }
+};
+<span class="pl-k">class</span> <span class="pl-en">window</span>
+{
+<span class="pl-k">public:</span>
+    <span class="pl-en">window</span>():_hwnd(<span class="pl-c1">0</span>){}
+    <span class="pl-en">window</span>(<span class="pl-k">char</span> <span class="pl-k">const</span>* caption, <span class="pl-k">char</span> <span class="pl-k">const</span>* className, HINSTANCE hInstance)
+    {
+        _hwnd = <span class="pl-c1">CreateWindow</span>(
+            className,
+            caption,
+            WS_OVERLAPPEDWINDOW,
+            CW_USEDEFAULT, CW_USEDEFAULT, <span class="pl-c1">400</span>, <span class="pl-c1">320</span>,
+            <span class="pl-c1">NULL</span>, <span class="pl-c1">NULL</span>, hInstance, <span class="pl-c1">NULL</span>);
+        <span class="pl-k">if</span>(_hwnd == <span class="pl-c1">NULL</span>)
+        {
+            <span class="pl-c1">MessageBox</span>(<span class="pl-c1">NULL</span>, <span class="pl-s"><span class="pl-pds">"</span>Window Creation Failed!<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Error!<span class="pl-pds">"</span></span>,
+                MB_ICONEXCLAMATION | MB_OK);        
+        }
+    }
+    <span class="pl-k">void</span> <span class="pl-en">Show</span>(<span class="pl-k">int</span> nCmdShow)
+    {
+        <span class="pl-c1">ShowWindow</span>(_hwnd, nCmdShow);
+        <span class="pl-c1">UpdateWindow</span>(_hwnd);
+    }
+    <span class="pl-k">operator</span> <span class="pl-en">HWND</span>(){<span class="pl-k">return</span> _hwnd;}
+<span class="pl-k">protected:</span>
+    HWND _hwnd;
+};
+
+<span class="pl-k">int</span> WINAPI <span class="pl-en">WinMain</span>(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+    LPSTR lpCmdLine, <span class="pl-k">int</span> nCmdShow)
+{
+    <span class="pl-k">char</span> className[]=<span class="pl-s"><span class="pl-pds">"</span>roger<span class="pl-pds">"</span></span>;
+    HWND hwnd;
+    MSG msg;
+    <span class="pl-k">try</span>
+    {
+        <span class="pl-c">//Step 1: Registering the Window Class</span>
+        windowclass <span class="pl-smi">winClass</span>(WndProc,className,hInstance);
+        winClass.<span class="pl-c1">Register</span>();
+        <span class="pl-c">// Step 2: Creating the Window</span>
+        window <span class="pl-smi">win</span>(className,className,hInstance);
+        win.<span class="pl-c1">Show</span>(nCmdShow);
+
+        <span class="pl-c">/*window win2("winow2","win2",hInstance);</span>
+<span class="pl-c">        win2.Show(nCmdShow);*/</span>
+    }
+    <span class="pl-k">catch</span>(...)
+    {
+        <span class="pl-c1">MessageBox</span> (<span class="pl-c1">0</span>, <span class="pl-s"><span class="pl-pds">"</span>Unknown<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Exception<span class="pl-pds">"</span></span>, MB_ICONEXCLAMATION | MB_OK);
+    }
+    <span class="pl-k">int</span> status;
+    <span class="pl-c">// Step 3: The Message Loop</span>
+    <span class="pl-k">while</span>((status= <span class="pl-c1">GetMessage</span>(&amp;msg,<span class="pl-c1">0</span>,<span class="pl-c1">0</span>,<span class="pl-c1">0</span>))!=<span class="pl-c1">0</span>)
+    {
+        <span class="pl-k">if</span>(status == -<span class="pl-c1">1</span>)
+            <span class="pl-k">return</span> -<span class="pl-c1">1</span>;
+        <span class="pl-c1">TranslateMessage</span>(&amp;msg);
+        <span class="pl-c1">DispatchMessage</span>(&amp;msg);
+    }
+    <span class="pl-k">return</span> msg.<span class="pl-smi">wParam</span>;
+}
+<span class="pl-c">// Step 4: the Window Procedure</span>
+LRESULT CALLBACK <span class="pl-en">WndProc</span>(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    <span class="pl-k">switch</span>(msg)
+    {
+        <span class="pl-k">case</span> WM_LBUTTONDOWN:
+            {
+            <span class="pl-k">char</span> szFileName[MAX_PATH];
+            HINSTANCE hInstance = <span class="pl-c1">GetModuleHandle</span>(<span class="pl-c1">NULL</span>);
+
+            HDC hdc;
+            hdc = <span class="pl-c1">GetDC</span>(hwnd);
+            <span class="pl-c1">TextOut</span>(hdc,<span class="pl-c1">0</span>,<span class="pl-c1">50</span>,<span class="pl-s"><span class="pl-pds">"</span>this is a test<span class="pl-pds">"</span></span>,<span class="pl-c1">10</span>);
+            <span class="pl-c1">ReleaseDC</span>(hwnd,hdc);
+
+            <span class="pl-c">//</span>
+            <span class="pl-c">//window win2("win2","window2",hInstance);</span>
+            <span class="pl-c">//win2.Show(SW_SHOW);</span>
+
+            <span class="pl-c1">GetModuleFileName</span>(hInstance, szFileName, MAX_PATH);
+            <span class="pl-c1">MessageBox</span>(hwnd, szFileName, <span class="pl-s"><span class="pl-pds">"</span>This program is:<span class="pl-pds">"</span></span>, MB_OK | MB_ICONINFORMATION);
+            }       
+        <span class="pl-k">break</span>;  
+        <span class="pl-k">case</span> WM_CLOSE:
+            <span class="pl-c1">DestroyWindow</span>(hwnd);
+            <span class="pl-k">break</span>;
+        <span class="pl-k">case</span> WM_DESTROY:
+            <span class="pl-c1">PostQuitMessage</span>(<span class="pl-c1">0</span>);
+            <span class="pl-k">break</span>;
+        <span class="pl-k">default</span>:
+            <span class="pl-k">return</span> <span class="pl-c1">DefWindowProc</span>(hwnd, msg, wParam, lParam);
+    }
+    <span class="pl-k">return</span> <span class="pl-c1">0</span>;
+}</pre></div>
+
+<h3>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+
+<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor’s GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+
+<h3>
+<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+
+<p>Having trouble with Pages? Check out our <a href="https://help.github.com/pages">documentation</a> or <a href="https://github.com/contact">contact support</a> and we’ll help you sort it out.</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/Roger8">Roger8</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
