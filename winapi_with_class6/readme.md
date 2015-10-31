@@ -5,3 +5,7 @@
 ![win api](https://github.com/Roger8/win32api-tourial2/blob/master/winapi_with_class6/p1.jpg "windows1")
 点击“确定”之后销毁dialog窗口
 
+<<<<<<< HEAD
+=======
+![win api](https://github.com/Roger8/win32api-tourial2/tree/master//winapi_with_class6/p1.jpg "windows1")
+>>>>>>> origin/master
