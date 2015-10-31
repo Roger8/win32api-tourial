@@ -5,6 +5,4 @@
 ![win api](https://github.com/Roger8/win32api-tourial2/blob/master/winapi_with_class7/p1.jpg "windows1")
 
 
-<<<<<<< HEAD
-=======
 ![win api](https://github.com/Roger8/win32api-tourial2/tree/master//winapi_with_class7/p1.jpg "windows1")
