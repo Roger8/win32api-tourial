@@ -33,4 +33,7 @@ processorArchitecture = '*' publicKeyToken = '6595b64144ccf1df' language = '*'\"
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 ```
+## win32api_menu2
+![menu](/imgs/win32api_menu2.png "menu")
+
 &copy;Roger
